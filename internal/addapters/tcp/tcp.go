@@ -43,11 +43,14 @@ func (s *Server) Start() error {
 
 func handleConnection(conn net.Conn) {
 
-	var payl Request
 	dec := json.NewDecoder(conn)
 	enc := json.NewEncoder(conn)
 
+	defer conn.Close()
+
 	for {
+		var payl Request
+
 		conn.SetReadDeadline(time.Now().Add(time.Minute * 10))
 
 		err := dec.Decode(&payl)
@@ -59,11 +62,12 @@ func handleConnection(conn net.Conn) {
 
 		handl, ok := MethodMap[payl.Method]
 		if !ok {
-			enc.Encode([]byte("invlid method"))
-			return
+			enc.Encode(NewResponse(Response{Status: 404, Data: "metodo invalido"}))
+			continue
 		}
 
-		handl(conn, payl)
+		resp:= handl(conn, payl)
+		enc.Encode(resp)
 
 	}
 

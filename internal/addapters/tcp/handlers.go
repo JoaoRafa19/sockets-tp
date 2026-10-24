@@ -20,17 +20,21 @@ type Handler struct {
 	events *service.EventService
 }
 
-func CreateEventHandler(conn net.Conn, payl Request) {
+func CreateEventHandler(conn net.Conn, payl Request) Response {
 
 	var data CreateEventInput
 
 	if err := json.NewDecoder(bytes.NewReader(payl.Data)).Decode(&data); err != nil {
-		conn.Write(NewResponse(Response{
+		return Response{
 			Status: 400,
 			Data:   "invalid payload",
-		}))
+		}
 	}
 
 	fmt.Println(data)
 
+	// Use service to create on database 
+		
+
+	return Response{Status: 201, Data: "created"}
 }
