@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net"
 	"sockets-tc/config"
-	"sockets-tc/internal/addapters/service"
+	"time"
 )
 
 type Server struct {
@@ -43,19 +43,28 @@ func (s *Server) Start() error {
 
 func handleConnection(conn net.Conn) {
 
-	var payl Payload
-	err := json.NewDecoder(conn).Decode(&payl)
+	var payl Request
+	dec := json.NewDecoder(conn)
+	enc := json.NewEncoder(conn)
 
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	for {
+		conn.SetReadDeadline(time.Now().Add(time.Minute * 10))
 
-	switch payl.Method {
-	case CreateEvent:
-			service.CreateEvent()
-	default:
-		conn.Write([]byte("unexpected method"))
+		err := dec.Decode(&payl)
+
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		handl, ok := MethodMap[payl.Method]
+		if !ok {
+			enc.Encode([]byte("invlid method"))
+			return
+		}
+
+		handl(conn, payl)
+
 	}
 
 }
