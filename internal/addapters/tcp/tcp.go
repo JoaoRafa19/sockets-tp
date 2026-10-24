@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"sockets-tc/config"
+	"sockets-tc/internal/addapters/service"
 )
 
 type Server struct {
@@ -51,8 +52,8 @@ func handleConnection(conn net.Conn) {
 	}
 
 	switch payl.Method {
-	case CreateTicket:
-		conn.Write([]byte("ok"))
+	case CreateEvent:
+			service.CreateEvent()
 	default:
 		conn.Write([]byte("unexpected method"))
 	}

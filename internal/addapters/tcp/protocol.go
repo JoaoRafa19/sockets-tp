@@ -1,12 +1,18 @@
 package addapters
 
+import "encoding/json"
+
 type Method string
 
 const (
-	CreateTicket Method = "create-ticket"
+	CreateEvent Method = "create-event"
 )
 
+type HandlerFunc func(Payload)
+
+var MethodMap = map[Method]HandlerFunc{}
+
 type Payload struct {
-	Method Method `json:"method"`
-	Data   any    `data:"data"`
+	Method Method          `json:"method"`
+	Data   json.RawMessage `data:"data"`
 }
