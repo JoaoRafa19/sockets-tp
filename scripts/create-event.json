@@ -1,0 +1,10 @@
+{
+    "method": "create-event",
+    "data": {
+        "name": "Show de pagode",
+        "tickets": [
+            { "type": "pista", "quantity": 1000 },
+            { "type": "camarote", "quantity": 100 }
+        ]
+    }
+}

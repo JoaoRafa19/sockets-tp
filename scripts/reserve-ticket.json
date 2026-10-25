@@ -1,0 +1,9 @@
+{
+    "method": "reserve-ticket",
+    "data": {
+        "event_id": "251e867d-f797-4eeb-80a1-82a088b64556",
+        "email": "joao@email.com",
+        "type": "pista",
+        "quantity": 2
+    }
+}

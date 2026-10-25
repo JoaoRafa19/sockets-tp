@@ -1,0 +1,7 @@
+{
+    "method": "get-reservation",
+    "data": {
+        "reservation_id": "66c08dbc-efb7-40cf-8443-be602d0f5436",
+        "email": "joao@email.com"
+    }
+}
