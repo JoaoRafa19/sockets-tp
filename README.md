@@ -5,8 +5,17 @@ Aplicativo para compra de ingressos para eventos, com comunicação via **TCP** 
 
 ## Como rodar
 
-```powershell
-$env:port=":3000"; go run .\cmd\server\main.go
+Subir o banco e rodar as migrations:
+
+```bash
+docker compose up -d db
+docker compose run --rm migrate
+```
+
+Rodar o servidor:
+
+```bash
+port=:3000 go run ./cmd/server/main.go
 ```
 
 ## Protocolo

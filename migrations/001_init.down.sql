@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS reservations;
+DROP TABLE IF EXISTS event_tickets;
+DROP TABLE IF EXISTS events;

@@ -1,0 +1,4 @@
+.git
+*.md
+payloads
+docker-compose.yml
