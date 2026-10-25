@@ -32,3 +32,7 @@ UPDATE event_tickets
 SET quantity = quantity + sqlc.arg(amount)::int
 WHERE event_id = sqlc.arg(event_id)
   AND type = sqlc.arg(type);
+
+
+-- name: EventExists :one
+SELECT EXISTS (SELECT 1 FROM events WHERE id = $1);

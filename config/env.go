@@ -1,22 +1,33 @@
 package config
 
 import (
+	"errors"
 	"fmt"
 	"os"
+
+	"github.com/spf13/viper"
 )
 
 type Env struct {
-	Port string
+	Port        string
+	DatabaseURL string
 }
 
-func NewEnv() *Env {
-	port, has := os.LookupEnv("port")
-	if !has {
-		fmt.Println("Port not found")
+func NewEnv() (*Env, error) {
+	viper.SetConfigFile(".env")
+	if err := viper.ReadInConfig(); err != nil && !errors.Is(err, os.ErrNotExist) {
+		return nil, fmt.Errorf("ler .env: %w", err)
+	}
+	viper.AutomaticEnv()
+	viper.SetDefault("port", ":3000")
+
+	env := &Env{
+		Port:        viper.GetString("port"),
+		DatabaseURL: viper.GetString("db_url"),
 	}
 
-	return &Env{
-		Port: port,
+	if env.DatabaseURL == "" {
+		return nil, errors.New("DATABASE_URL não definida")
 	}
-
+	return env, nil
 }
