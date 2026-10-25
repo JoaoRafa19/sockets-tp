@@ -1,28 +1,51 @@
-package addapters
+package tcp
 
 import (
-	"bytes"
 	"encoding/json"
+
+	"sockets-tc/internal/domain"
 )
 
-type Method string
-
+// Métodos aceitos pelo servidor.
 const (
-	CreateEvent Method = "create-event"
+	MethodCreateEvent       = "create-event"
+	MethodReserveTicket     = "reserve-ticket"
+	MethodGetReservation    = "get-reservation"
+	MethodCancelReservation = "cancel-reservation"
 )
 
 type Request struct {
-	Method Method          `json:"method"`
-	Data   json.RawMessage `data:"data"`
+	Method string          `json:"method"`
+	Data   json.RawMessage `json:"data"`
 }
 
 type Response struct {
-	Status int    `json:"status"`
-	Data   string `json:"data"`
+	Status string `json:"status"`
+	Data   any    `json:"data,omitempty"`
+	Error  string `json:"error,omitempty"`
 }
 
-func NewResponse(resp Response) []byte {
-	res := bytes.NewBuffer([]byte(""))
-	json.NewEncoder(res).Encode(resp)
-	return res.Bytes()
+func ok(data any) Response {
+	return Response{Status: "ok", Data: data}
+}
+
+func fail(msg string) Response {
+	return Response{Status: "error", Error: msg}
+}
+
+type createEventRequest struct {
+	Name    string          `json:"name"`
+	Tickets []domain.Ticket `json:"tickets"`
+}
+
+type reserveTicketRequest struct {
+	EventID  string `json:"event_id"`
+	Email    string `json:"email"`
+	Type     string `json:"type"`
+	Quantity int    `json:"quantity"`
+}
+
+type reservationRequest struct {
+	ReservationID string `json:"reservation_id"`
+	Email         string `json:"email"`
 }

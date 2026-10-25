@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
-	"sockets-tc/internal/adapters/repository/postgres/db"
+	"sockets-tc/internal/adapters/postgres/db"
 	"sockets-tc/internal/domain"
 )
 
@@ -140,6 +140,6 @@ func toDomainReservation(row db.Reservation) domain.Reservation {
 		Email:     row.Email,
 		Quantity:  int(row.Quantity),
 		Status:    row.Status,
-		CreatedAt: row.CreatedAt.Time,
+		CreatedAt: row.CreatedAt,
 	}
 }

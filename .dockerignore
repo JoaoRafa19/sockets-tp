@@ -2,3 +2,4 @@
 *.md
 payloads
 docker-compose.yml
+scripts

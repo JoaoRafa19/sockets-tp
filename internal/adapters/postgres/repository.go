@@ -5,7 +5,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"sockets-tc/internal/adapters/repository/postgres/db"
+	"sockets-tc/internal/adapters/postgres/db"
 	"sockets-tc/internal/ports"
 )
 

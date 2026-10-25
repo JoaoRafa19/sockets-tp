@@ -1,9 +1,11 @@
-package addapters
+package tcp
 
-import "net"
-
-type HandlerFunc func(net.Conn, Request) Response
-
-var MethodMap = map[Method]HandlerFunc{
-	CreateEvent: CreateEventHandler,
+// newRoutes liga cada método do protocolo ao handler dele.
+func (h *Handler) newRoutes() map[string]HandlerFunc {
+	return map[string]HandlerFunc{
+		MethodCreateEvent:       h.createEvent,
+		MethodReserveTicket:     h.reserveTicket,
+		MethodGetReservation:    h.getReservation,
+		MethodCancelReservation: h.cancelReservation,
+	}
 }

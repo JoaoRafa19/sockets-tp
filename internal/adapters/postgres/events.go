@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"sockets-tc/internal/adapters/repository/postgres/db"
+	"sockets-tc/internal/adapters/postgres/db"
 	"sockets-tc/internal/domain"
 )
 
@@ -32,7 +32,7 @@ func (r *Repository) CreateEvent(ctx context.Context, e domain.Event) (domain.Ev
 			ID:        row.ID.String(),
 			Name:      row.Name,
 			Tickets:   e.Tickets,
-			CreatedAt: row.CreatedAt.Time,
+			CreatedAt: row.CreatedAt,
 		}
 		return nil
 	})

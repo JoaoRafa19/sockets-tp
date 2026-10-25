@@ -42,6 +42,8 @@ port=:3000 go run ./cmd/server/main.go
 
 ## Methods
 
+> Os IDs são UUIDs gerados pelo banco. Nos exemplos abaixo, `evt-1` e `res-1` representam o `id` devolvido pelo `create-event` e pelo `reserve-ticket`.
+
 ### create-event
 Cria um evento com os tipos de ingresso e a quantidade de cada um.
 
@@ -150,6 +152,10 @@ Resposta:
     "status": "ok",
     "data": {
         "id": "res-1",
+        "event_id": "evt-1",
+        "email": "joao@email.com",
+        "type": "pista",
+        "quantity": 2,
         "status": "cancelled"
     }
 }

@@ -1,74 +1,82 @@
-package addapters
+package tcp
 
 import (
+	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
 	"net"
-	"sockets-tc/config"
 	"time"
+
+	"sockets-tc/config"
 )
 
 type Server struct {
-	Env *config.Env
+	Env     *config.Env
+	handler *Handler
 }
 
-func NewServer(env *config.Env) *Server {
+func NewServer(env *config.Env, handler *Handler) *Server {
 	return &Server{
-		Env: env,
+		Env:     env,
+		handler: handler,
 	}
 }
 
 func (s *Server) Start() error {
-
 	listener, err := net.Listen("tcp", s.Env.Port)
 	if err != nil {
 		return err
 	}
-
 	defer listener.Close()
-	fmt.Printf("Server listen on port %s ....  \n ", s.Env.Port)
+
+	fmt.Printf("Server listen on port %s ....\n", s.Env.Port)
 
 	for {
 		conn, err := listener.Accept()
-
-		fmt.Println("connection accepted: ", conn)
-
 		if err != nil {
-			fmt.Println("failed to accept connection")
+			fmt.Println("failed to accept connection:", err)
 			continue
 		}
-		go handleConnection(conn)
+
+		fmt.Println("connection accepted:", conn.RemoteAddr())
+		go s.handleConnection(conn)
 	}
 }
 
-func handleConnection(conn net.Conn) {
+func (s *Server) handleConnection(conn net.Conn) {
+	defer conn.Close()
 
 	dec := json.NewDecoder(conn)
 	enc := json.NewEncoder(conn)
 
-	defer conn.Close()
-
 	for {
+		conn.SetReadDeadline(time.Now().Add(10 * time.Minute))
+
 		var payl Request
-
-		conn.SetReadDeadline(time.Now().Add(time.Minute * 10))
-
-		err := dec.Decode(&payl)
-
-		if err != nil {
-			fmt.Println(err)
+		if err := dec.Decode(&payl); err != nil {
+			if errors.Is(err, io.EOF) || errors.Is(err, io.ErrUnexpectedEOF) || isTimeout(err) {
+				fmt.Println("connection closed:", conn.RemoteAddr())
+				return
+			}
+			// JSON quebrado
+			enc.Encode(fail("invalid payload: " + err.Error()))
 			return
 		}
 
-		handl, ok := MethodMap[payl.Method]
-		if !ok {
-			enc.Encode(NewResponse(Response{Status: 404, Data: "metodo invalido"}))
-			continue
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		resp := s.handler.Handle(ctx, payl)
+		cancel()
+
+		if err := enc.Encode(resp); err != nil {
+			fmt.Println("failed to write response:", err)
+			return
 		}
-
-		resp:= handl(conn, payl)
-		enc.Encode(resp)
-
 	}
+}
 
+func isTimeout(err error) bool {
+	var netErr net.Error
+	return errors.As(err, &netErr) && netErr.Timeout()
 }

@@ -19,6 +19,7 @@ func NewEnv() (*Env, error) {
 		return nil, fmt.Errorf("ler .env: %w", err)
 	}
 	viper.AutomaticEnv()
+	_ = viper.BindEnv("db_url", "db_url", "DATABASE_URL") // nome usado no docker-compose
 	viper.SetDefault("port", ":3000")
 
 	env := &Env{

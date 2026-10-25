@@ -1,4 +1,4 @@
-.PHONY: run db migrate down
+.PHONY: run db migrate down sqlc test-api
 
 run:
 	port=:3000 go run ./cmd/server/main.go
@@ -13,4 +13,7 @@ down:
 	docker compose down
 
 sqlc:
-	
+	sqlc generate
+
+test-api:
+	python3 scripts/test_api.py
